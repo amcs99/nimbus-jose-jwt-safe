@@ -1,0 +1,88 @@
+version 2.13.0 (2013-03-28)
+	* Implements basic MMA attack protection for RSA1_5 JWE algorithm (issue
+	  #23).
+
+version 2.26.1 (2014-07-14)
+    * Removes checked exception from RSA1_5.decryptCEK(...) to minimise
+      exposure to timing attacks for JWE with RSA1_5 (issue #91).
+
+version 3.1.2 (2014-09-01)
+    * Closes timing attack vulnerability in MACVerifier for JWS with HS256,
+      HS384 and HS512 (issue #107).
+
+version 4.34.2 (2017-02-28)
+    * Adds an explicit check during ECDH decryption to ensure the submitted
+      ephemeral public EC key is on the same curve as the private EC key.
+      Intended to prevent an "Invalid Curve Attack" with JCA providers that
+      don't perform this check internally. See http://c2id.co/3n for details.
+      Affected is the default Java SUN JCA provider that comes with Java prior
+      to version 1.8.0_51. Later Java versions and the BouncyCastle JCA
+      provider are not affected (issue #210). Allocated CVE-2017-12974.
+
+version 4.39 (2017-06-02)
+    * Fixes authenticated AES/CBC decryption to prevent Padding Oracle attacks
+      in JWE with A128CBC-HS256, A192CBC-HS384 and A256CBC-HS512 encryption
+      method (issue #223). Allocated CVE-2017-12973.
+    * Fixes authenticated AES/CBC decryption to prevent integer overflow
+      attacks that can cause the HMAC check to be bypassed. Affected is JWE
+      decryption with A128CBC-HS256, A192CBC-HS384 and A256CBC-HS512 encryption
+      method (issue #224). Allocated CVE-2017-12972.
+
+version 5.5 (2018-02-27)
+    * Adds required JWK constructor check of the first certificate in the X.509
+      certificate chain parameter ("x5c") to ensure its public subject key info
+      matches the JWK type and public parameters ("n" and "e" for an RSA JWK,
+      "x" and "y" for an EC JWK) (iss #237).
+
+version 6.0 (2018-07-24)
+    * Refactors the Base64 and Base64URL codec utilities to prevent potential
+      cache timing attacks due to use of table lookups. The Base64URL utility
+      is used to decode the encrypted key portion in a JWE object (iss #270).
+
+version 7.9 (2019-10-05)
+    * Fixes NPE when parsing JOSE header with missing or null "alg" (iss #332).
+      Allocated CVE-2019-17195.
+    * Fixes IllegalArgumentException when parsing JOSE header with null "typ"
+      (iss #333). Allocated CVE-2019-17195.
+    * Fixes NPE when parsing JOSE header with null "crit" (iss #334). Allocated
+      CVE-2019-17195.
+    * Fixes NPE when parsing JOSE header with null "jwk" (iss #335). Allocated
+      CVE-2019-17195.
+    * Fixes NPE when parsing JOSE header with null BASE64 or BASE65URL encoded
+      parameters (iss #336). Allocated CVE-2019-17195.
+    * Fixes IllegalArgumentException when parsing JWE header with null "zip"
+      (iss #337). Allocated CVE-2019-17195.
+    * Catch unexpected exceptions in JSONObjectUtils.parse and rethrow as
+      ParseException. Allocated CVE-2019-17195.
+
+version 9.10 (2021-06-05)
+    * Enforces a string length limit of 10K chars when parsing JOSE headers
+      (after BASE64URL decoding). The 10K chars should be sufficient to
+      accommodate JOSE headers with an X.509 certificate chain in the "x5c"
+      header parameter (iss #424).
+    * Prevents StackOverflowError when parsing a JOSE header with a very large
+      number of nested JOSE objects (iss #425).
+
+version 9.21 (2022-03-07)
+    * Prevent construction and parsing of JWS and JWE headers with non-public
+      key in "jwk" parameter (iss #467).
+
+version 9.22 (2022-04-22)
+    * Adds ECDSA R and S signature value checking to prevent exploitation of
+      Java runtimes and JCE providers vulnerable to CVE-2022-21449 (iss #472).
+
+version 9.37.2 (2023-12-04)
+    * The PasswordBasedDecrypter (PBKDF2) must enforce a limit on the maximum
+      allowed JWE "p2c" header value to prevent DoS attacks. This limit is now
+      set to 1 million, taking into account that OWASP recommends 600 thousand
+      iterations for PBKDF2-HMAC-SHA256 (iss 526). Allocated CVE-2023-52428.
+
+10.0.2 (2025-02-25)
+    * Updates JSONObjectUtils.parse and JSONArrayUtils.parse to reject JSON
+      strings with object and array nesting deeper than 255. This is intended
+      to prevent StackOverflowError's in Gson when a parsed JSON string with
+      excessive nesting is serialised, for example to log the claims of a
+      parsed JWT. Note that in Gson the JSON reader is not susceptible to
+      StackOverflowError's, only the serialisation. The nesting limit of depth
+      255 is introduced in Gson 2.12.0 (iss #583).
+    * Updates GSon to 2.12.1.
