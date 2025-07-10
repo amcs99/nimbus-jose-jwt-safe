@@ -140,20 +140,20 @@
                             </compileSourceRoots>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>java9</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <release>9</release>
-                            <compileSourceRoots>
-                                <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>
-                            </compileSourceRoots>
-                            <multiReleaseOutput>true</multiReleaseOutput>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>java9</id>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>compile</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <release>9</release>-->
+<!--                            <compileSourceRoots>-->
+<!--                                <compileSourceRoot>${project.basedir}/src/main/java9</compileSourceRoot>-->
+<!--                            </compileSourceRoots>-->
+<!--                            <multiReleaseOutput>true</multiReleaseOutput>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                 </executions>
             </plugin>
             <plugin>
