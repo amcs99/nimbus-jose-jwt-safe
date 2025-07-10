@@ -136,22 +136,22 @@ public class AESCBC {
 	 *
 	 * @throws JOSEException If encryption failed.
 	 */
-	public static byte[] encrypt(final SecretKey secretKey, 
-		                     final byte[] iv,
-		                     final byte[] plainText,
-		                     final Provider provider)
-		throws JOSEException {
-
-		Cipher cipher = createAESCBCCipher(secretKey, true, iv, provider);
-
-		try {
-			return cipher.doFinal(plainText);	
-		
-		} catch (Exception e) {
-
-			throw new JOSEException(e.getMessage(), e);
-		}
-	}
+//	public static byte[] encrypt(final SecretKey secretKey,
+//		                     final byte[] iv,
+//		                     final byte[] plainText,
+//		                     final Provider provider)
+//		throws JOSEException {
+//
+//		Cipher cipher = createAESCBCCipher(secretKey, true, iv, provider);
+//
+//		try {
+//			return cipher.doFinal(plainText);
+//
+//		} catch (Exception e) {
+//
+//			throw new JOSEException(e.getMessage(), e);
+//		}
+//	}
 
 
 	/**
@@ -190,7 +190,13 @@ public class AESCBC {
 		CompositeKey compositeKey = new CompositeKey(secretKey);
 
 		// Encrypt plain text
-		byte[] cipherText = encrypt(compositeKey.getAESKey(), iv, plainText, ceProvider);
+		byte[] cipherText;
+		Cipher cipher = createAESCBCCipher(compositeKey.getAESKey(), true, iv, ceProvider);
+		try {
+			cipherText = cipher.doFinal(plainText);
+		} catch (Exception e) {
+			throw new JOSEException(e.getMessage(), e);
+		}
 
 		// AAD length to 8 byte array
 		byte[] al = AAD.computeLength(aad);
@@ -251,7 +257,14 @@ public class AESCBC {
 		// Generate alternative CEK using concat-KDF
 		SecretKey altCEK = LegacyConcatKDF.generateCEK(secretKey, header.getEncryptionMethod(), epu, epv);
 
-		byte[] cipherText = AESCBC.encrypt(altCEK, iv, plainText, ceProvider);
+		byte[] cipherText;
+
+		Cipher cipher = createAESCBCCipher(altCEK, true, iv, ceProvider);
+		try {
+			cipherText = cipher.doFinal(plainText);
+		} catch (Exception e) {
+			throw new JOSEException(e.getMessage(), e);
+		}
 
 		// Generate content integrity key for HMAC
 		SecretKey cik = LegacyConcatKDF.generateCIK(secretKey, header.getEncryptionMethod(), epu, epv);
@@ -280,22 +293,22 @@ public class AESCBC {
 	 *
 	 * @throws JOSEException If decryption failed.
 	 */
-	public static byte[] decrypt(final SecretKey secretKey, 
-		                     final byte[] iv,
-		                     final byte[] cipherText,
-		                     final Provider provider)
-		throws JOSEException {
-
-		Cipher cipher = createAESCBCCipher(secretKey, false, iv, provider);
-
-		try {
-			return cipher.doFinal(cipherText);
-
-		} catch (Exception e) {
-
-			throw new JOSEException(e.getMessage(), e);
-		}
-	}
+//	public static byte[] decrypt(final SecretKey secretKey,
+//		                     final byte[] iv,
+//		                     final byte[] cipherText,
+//		                     final Provider provider)
+//		throws JOSEException {
+//
+//		Cipher cipher = createAESCBCCipher(secretKey, false, iv, provider);
+//
+//		try {
+//			return cipher.doFinal(cipherText);
+//
+//		} catch (Exception e) {
+//
+//			throw new JOSEException(e.getMessage(), e);
+//		}
+//	}
 
 
 	/**
@@ -355,7 +368,15 @@ public class AESCBC {
 			throw new JOSEException("MAC check failed");
 		}
 
-		return decrypt(compositeKey.getAESKey(), iv, cipherText, ceProvider);
+		Cipher cipher = createAESCBCCipher(compositeKey.getAESKey(), false, iv, ceProvider);
+
+		try {
+			return cipher.doFinal(cipherText);
+
+		} catch (Exception e) {
+
+			throw new JOSEException(e.getMessage(), e);
+		}
 	}
 
 
@@ -419,7 +440,15 @@ public class AESCBC {
 
 		SecretKey cekAlt = LegacyConcatKDF.generateCEK(secretKey, header.getEncryptionMethod(), epu, epv);
 
-		return AESCBC.decrypt(cekAlt, iv.decode(), cipherText.decode(), ceProvider);
+		Cipher cipher = createAESCBCCipher(cekAlt, false, iv.decode(), ceProvider);
+
+		try {
+			return cipher.doFinal(cipherText.decode());
+
+		} catch (Exception e) {
+
+			throw new JOSEException(e.getMessage(), e);
+		}
 	}
 
 
